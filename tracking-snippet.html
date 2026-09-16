@@ -1,0 +1,38 @@
+<!--
+  BOT CLICK GUARD - TRACKING SNIPPET
+
+  Bu kodu GoDaddy'de reklamdan gelen ziyaretçilerin ulaştığı
+  landing page'ine ekle (HTML bölümü / Custom Code alanı).
+
+  ÖNEMLİ: Aşağıdaki "http://localhost:8000" kısmını, sistemi bir
+  sunucuya taşıdığında gerçek adresle değiştirmen gerekecek.
+  Şu an sadece kendi bilgisayarında test ediyorsan bu haliyle
+  çalışmaz - çünkü GoDaddy'deki sayfa internetten senin
+  bilgisayarına ulaşamaz. Bu adımı bir sonraki aşamada
+  (sunucuya taşıma) çözeceğiz.
+-->
+<script>
+(function () {
+  var API_URL = "http://localhost:8000/track/click"; // <-- bunu ileride gerçek sunucu adresiyle değiştireceksin
+  var ACCOUNT_ID = "acc_123"; // <-- kendi hesap/işletme kimliğin (istediğin bir metin olabilir)
+
+  // URL'deki gclid parametresini yakala (Google Ads'in tıklama kimliği)
+  function getParam(name) {
+    var params = new URLSearchParams(window.location.search);
+    return params.get(name);
+  }
+
+  fetch(API_URL, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      account_id: ACCOUNT_ID,
+      campaign_id: getParam("utm_campaign") || null,
+      gclid: getParam("gclid") || null,
+      landing_page: window.location.href
+    })
+  }).catch(function (err) {
+    console.error("Bot Click Guard tracking hatası:", err);
+  });
+})();
+</script>
